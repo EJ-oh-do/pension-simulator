@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>국민연금 시뮬레이터</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .container { max-width: 400px; margin: 0 auto; }
+    h3 { text-align: center; }
+    label { display: block; margin-bottom: 10px; }
+    input { width: 100%; padding: 8px; box-sizing: border-box; }
+    button { margin-top: 10px; padding: 10px; width: 100%; background-color: #4CAF50; color: white; border: none; }
+    #result { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h3>💰 국민연금 예상 수령액 시뮬레이터</h3>
+    <label>🎂 생년월일 (YYYY-MM-DD):<br>
+      <input type="date" id="birthdate" />
+    </label>
+
+    <label>📆 납부 시작 연도:<br>
+      <input type="number" id="startYear" placeholder="예: 2025" />
+    </label>
+
+    <label>💳 월 납부액 (원):<br>
+      <input type="number" id="monthlyPayment" placeholder="예: 300000" />
+    </label>
+
+    <button onclick="calculatePension()">📊 연금 계산하기</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function calculatePension() {
+      const birthdate = new Date(document.getElementById("birthdate").value);
+      const startYear = parseInt(document.getElementById("startYear").value);
+      const monthlyPayment = parseInt(document.getElementById("monthlyPayment").value);
+
+      if (isNaN(startYear) || isNaN(monthlyPayment) || !birthdate.getTime()) {
+        document.getElementById("result").innerText = "⚠️ 모든 항목을 올바르게 입력해 주세요.";
+        return;
+      }
+
+      const birthYear = birthdate.getFullYear();
+      const receiveAge = birthYear >= 1969 ? 65 : (birthYear >= 1953 ? 60 + Math.floor((birthYear - 1953) / 2) : 60);
+      const receiveYear = birthYear + receiveAge;
+      const contributionYears = Math.max(0, receiveYear - startYear);
+      const totalPaid = monthlyPayment * 12 * contributionYears;
+
+      const estimatedAnnualPension = (totalPaid * 1.5) / 20;
+      const estimatedMonthlyPension = Math.floor(estimatedAnnualPension / 12);
+
+      document.getElementById("result").innerHTML =
+        `🧓 수령 시작 예상 나이: <b>${receiveAge}세 (${receiveYear}년)</b><br>` +
+        `📌 총 납부 예상액: <b>${totalPaid.toLocaleString()}원</b><br>` +
+        `📤 예상 월 수령액: <b>${estimatedMonthlyPension.toLocaleString()}원</b> (20년 수령 기준)`;
+    }
+  </script>
+</body>
+</html>
